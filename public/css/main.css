@@ -280,3 +280,7 @@ textarea {
         page-break-after: avoid;
     }
 }
+
+canvas {
+    background: #eee;
+}
