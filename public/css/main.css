@@ -281,6 +281,11 @@ textarea {
     }
 }
 
+
+h1 {
+    font-family: "Ubuntu";
+}
+
 canvas {
     background: #eee;
 }
