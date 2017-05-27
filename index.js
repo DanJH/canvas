@@ -19,12 +19,20 @@ io.on("connection", function(socket) {
     })
 
     // Send connecting user the board
-    socket.join("joining");
     socket.emit("userInit", server.board);
 
     socket.on("createObj", function(data) {
         server.board.push(data);
         io.emit("createObj", data);
+    });
+
+    socket.on("clearOwnBoard", function(owner) {
+        for (var i in server.board) {
+            if (server.board[i].owner == owner) {
+                server.board.splice(i, 1);
+            }
+        }
+        io.emit("clearOwnBoard", owner);
     });
 
     socket.on("clearBoard", function(data) {

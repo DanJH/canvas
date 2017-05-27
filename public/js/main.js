@@ -63,7 +63,7 @@ $("#console input").on("keyup", function(e) {
 function newObject() {
     var obj = {
         pos: [mouse.x, mouse.y],
-        size: 30,
+        size: 5,
         color: player.color,
         owner: socket.id,
     };
@@ -81,7 +81,10 @@ function newObject() {
     socket.emit("createObj", obj);
 }
 
-// TODO: clear own drawing, not others
+function clearOwnBoard() {
+    socket.emit("clearOwnBoard", socket.id);
+}
+
 function clearBoard() {
     socket.emit("clearBoard", socket.id);
 }
@@ -108,8 +111,18 @@ socket.on("createObj", function(data) {
     board.push(data);
 });
 
+socket.on("clearOwnBoard", function(owner) {
+    // TODO: only removes half of squares
+    for (var i in board) {
+        if (board[i].owner == owner) {
+            board.splice(i, 1);
+        }
+    }
+});
+
 socket.on("clearBoard", function(data) {
     console.log(data + " cleared the board.");
+    $("body").effect("shake");
     board = [];
 });
 
@@ -137,7 +150,7 @@ socket.on("disconnect", function(data) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    if (board.length > 1) {
+    //if (board.length > 0) { hopefully not needed
         for (var i in board) {
             var obj = board[i];
 
@@ -149,7 +162,7 @@ function draw() {
             ctx.fillStyle = toHexColor(obj.color);
             ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
         }
-    }
+    //}
 
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
