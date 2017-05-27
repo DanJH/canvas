@@ -12,17 +12,23 @@ var server = {
 
 app.use(express.static(__dirname + "/public"));
 io.on("connection", function(socket) {
-    console.log(socket.handshake.address + " connected.")
+    //console.log(socket.handshake.address + " connected.")
 
     server.users.push({
         id: socket.id
     })
 
-    socket.on("instantiateObj", function(data) {
-        io.emit("instantiateObj", data);
+    // Send connecting user the board
+    socket.join("joining");
+    socket.emit("userInit", server.board);
+
+    socket.on("createObj", function(data) {
+        server.board.push(data);
+        io.emit("createObj", data);
     });
 
     socket.on("clearBoard", function(data) {
+        server.board = [];
         io.emit("clearBoard", data);
     });
 
@@ -31,7 +37,7 @@ io.on("connection", function(socket) {
     });
 
     socket.on("disconnect", function() {
-        console.log(socket.handshake.address + " disconnected.");
+        //console.log(socket.handshake.address + " disconnected.");
 
         for (var i in server.users) {
             if (server.users[i].id == socket.id) {
