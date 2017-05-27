@@ -1,30 +1,56 @@
 var canvas = document.getElementById('mainCanvas');
 var ctx = canvas.getContext('2d');
-var w = canvas.width;
-var h = canvas.height;
+var mousePos;
 
-var obj = [
+var objects = [
     {
-        name: "square",
-        pos: [10, 10],
-        size: [100, 100]
+        owner: "p1",
+        color: [randRange(20, 220), randRange(20, 220), randRange(20, 220)],
+        pos: [randRange(0, canvas.width), randRange(0, canvas.height)],
+        size: 10
     }
 ];
 
-$(document).keypress(function(event) {
-    switch (event.which) {
+$(document).keypress(function(e) {
+    switch (e.which) {
         case "c":
           //  pos.random
-
     }
 });
 
+$(document).mousemove(function(e) {
+    var rect = canvas.getBoundingClientRect();
+    mousePos = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+    };
+});
+
+$("canvas").mousedown(function(e) {
+    objects.push(
+        {
+            owner: "p1",
+            color: [randRange(20, 220), randRange(20, 220), randRange(20, 220)],
+            pos: [mousePos.x, mousePos.y],
+            size: 10
+        }
+    )
+});
+
+function randRange(a, b) {
+    return Math.floor(Math.random()*(b-a)+a);
+}
+
 function draw() {
-    ctx.clearRect(0, 0, w, h);
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = "#000000";
-    for (var i in obj) {
-        ctx.fillRect(obj[i].pos[0], obj[i].pos[1], obj[i].size[0], obj[i].size[1]);
+    // Draw all the objects
+    for (var i in objects) {
+        var obj = objects[i];
+
+        ctx.fillStyle = "#" + obj.color[0].toString(16)+obj.color[1].toString(16)+obj.color[2].toString(16);
+        ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
     }
 }
-setInterval(draw, 50/3); //1000/fps
+setInterval(draw, 1000/60);
