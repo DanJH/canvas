@@ -63,7 +63,7 @@ $("#console input").on("keyup", function(e) {
 function newObject() {
     var obj = {
         pos: [mouse.x, mouse.y],
-        size: 5,
+        size: 25,
         color: player.color,
         owner: socket.id,
     };

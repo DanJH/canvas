@@ -75,6 +75,7 @@ input[type="text"] {
     margin-bottom: .5em;
     padding: .5em;
     color: #555;
+    font-family: "Ubuntu";
     transition: ease .2s;
 }
 input[type="text"]:focus {
