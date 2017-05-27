@@ -62,20 +62,34 @@ $("#console input").on("keyup", function(e) {
 
 function newObject() {
     var obj = {
-        owner: socket.id,
+        pos: [mouse.x, mouse.y],
         size: 30,
         color: player.color,
-        pos: [mouse.x, mouse.y]
+        owner: socket.id,
     };
 
-    obj.pos = [obj.pos[0] - obj.size/2, obj.pos[1] - obj.size/2]
+    obj.pos = [obj.pos[0] - obj.size/2, obj.pos[1] - obj.size/2];
+
+    // Verify that there are no null properties
+    /*for (var prop in obj) {
+        if (!obj[prop]) {
+            console.warn("Object has null values, ignoring");
+            return;
+        }
+    }*/
 
     socket.emit("createObj", obj);
 }
 
+// TODO: clear own drawing, not others
 function clearBoard() {
     socket.emit("clearBoard", socket.id);
 }
+
+$("#apply").click(function() {
+    console.log("Applying new settings")
+    player.color = $("#color").val().split(",");
+});
 
 // Receive events
 socket.on("connect", function() {
@@ -87,7 +101,7 @@ socket.on("userInit", function(data) {
     for (var i in data) {
         board.push(data[i]);
     }
-    console.log("Done");
+    console.log("Fetched " + data.length + " indices");
 });
 
 socket.on("createObj", function(data) {
@@ -100,7 +114,7 @@ socket.on("clearBoard", function(data) {
 });
 
 socket.on("chatMessage", function(data) {
-    $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 5) + '</span>' + data.msg + '</li>');
+    $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 6) + '</span>' + data.msg + '</li>');
 });
 
 socket.on("serverData", function(data) {
@@ -139,8 +153,7 @@ function draw() {
 
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
-    ctx.fillText(mouse.x + ", " + mouse.y, 30, 20);
-    ctx.fillText("fps: " + fps, 150, 20);
+    ctx.fillText("fps: " + fps, canvas.width - 100, 30);
     
     // Get frames per second
     if (!lastFrame) {

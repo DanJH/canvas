@@ -14,12 +14,16 @@
         <canvas id="mainCanvas" width="800" height="600"></canvas>
 
         <div class="ui">
-            <a onclick="clearBoard()">Clear board</a>
+            <a class="button" onclick="clearBoard()">Clear board</a>
+            <br>
+            <input id="color" type="text" placeholder="50,50,50">
+            <br>
+            <a class="button" id="apply">Apply</a>
         </div>
 
         <div class="ui" id="console">
             <ul></ul>
-            <input type="text">
+            <input type="text" placeholder="message">
         </div>
         
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
