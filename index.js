@@ -14,6 +14,10 @@ io.on('connection', function(socket) {
   socket.on('clearBoard', function(data) {
     io.emit('clearBoard', data);
   });
+
+  socket.on('chatMessage', function(data) {
+    io.emit('chatMessage', data);
+  });
 });
 
 http.listen(port, () => console.log('Listening on port ' + port));

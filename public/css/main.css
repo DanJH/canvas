@@ -24,6 +24,19 @@ canvas {
     top: initial;
     bottom: 0;
 }
+#console ul {
+    list-style: none;
+    width: 100%;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+#console ul li {
+    background: #ccc;
+}
+#console ul li:nth-child(odd) {
+    background: #ddd;
+}
 
 a {
     display: inline-block;
