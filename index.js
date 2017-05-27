@@ -1,12 +1,19 @@
-var app = require('express')();
-var http = require('http').Server(app);
-io = require('socket.io')(http);
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const port = process.env.PORT || 3000;
 
- app.get(/^(.+)$/, function(req, res){ 
-     res.sendFile( __dirname + "/public/" + req.params[0]); 
- });
+app.use(express.static(__dirname + '/public'));
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+io.on('connection', function(socket) {
+  socket.on('instantiateObj', function(data) {
+    io.emit('instantiateObj', data);
+  });
+
+  socket.on('clearBoard', function(data) {
+    io.emit('clearBoard', data);
+  });
 });
-    
+
+http.listen(port, () => console.log('Listening on port ' + port));

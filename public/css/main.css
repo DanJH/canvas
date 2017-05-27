@@ -2,6 +2,38 @@ html {
     font-family: "Ubuntu", sans-serif;
 }
 
+html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0px;
+}
+
 canvas {
+    display: block;
     background: #eee;
 }
+
+.ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1.5em;
+}
+
+#console {
+    top: initial;
+    bottom: 0;
+}
+
+a {
+    display: inline-block;
+    margin-bottom: 1em;
+    padding: 1em 2em;
+    background: #888;
+    color: white;
+    border-radius: 2px;
+    font-family: "Ubuntu Condensed";
+    cursor: pointer;
+    user-select: none;
+}
+a:active { background: #777; }
