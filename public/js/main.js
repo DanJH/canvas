@@ -51,7 +51,7 @@ $("canvas").mousemove(function(e) {
     if (mouse.down) {
         var obj = {
             owner: socket.id,
-            size: 100,
+            size: 30,
             color: player.color,
             pos: [mouse.x, mouse.y]
         };
@@ -75,7 +75,6 @@ $("#console input").on("keyup", function(e) {
 });
 
 socket.on("connect", function() {
-    console.log(socket);
     console.log("User ID: " + socket.id);
 });
 
@@ -90,7 +89,22 @@ socket.on("clearBoard", function(data) {
 });
 
 socket.on("chatMessage", function(data) {
-    $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 5) + '</span> ' + data.msg + '</li>');
+    $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 5) + '</span>' + data.msg + '</li>');
+});
+
+socket.on("serverData", function(data) {
+    // Display object as ul
+    $("ul").empty();
+    
+    $.each(data, function(i) {
+        // TODO: more accurately represent the data
+        var li = $('<li/>').appendTo($('#serverData ul'));
+        $('<span/>').text(i + ": " + JSON.stringify(data[i])).appendTo(li);
+    });
+});
+
+socket.on("disconnect", function(data) {
+    console.log("user disconnected");
 });
 
 // Renders the canvas contents

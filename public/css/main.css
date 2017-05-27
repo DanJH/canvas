@@ -11,6 +11,7 @@ html, body {
 canvas {
     display: block;
     background: #eee;
+    cursor: default;
 }
 
 .ui {
@@ -36,6 +37,14 @@ canvas {
 }
 #console ul li:nth-child(odd) {
     background: #ddd;
+}
+#console span {
+    padding-right: 8px;
+}
+
+#serverData {
+    left: initial;
+    right: 0;
 }
 
 a {
