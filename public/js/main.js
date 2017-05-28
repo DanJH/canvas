@@ -101,18 +101,17 @@ socket.on("createObj", function(data) {
     board.push(data);
 });
 
-socket.on("clearOwnBoard", function(owner) {
-    // TODO: only removes half of squares
-    for (var i in board) {
-        if (board[i].owner == owner) {
-            board.splice(i, 1);
-        }
-    }
+socket.on("clearOwnBoard", function(user) {
+    board = board.filter(function(value, index, array) {
+        return (value.owner != user);
+    });
 });
 
-socket.on("clearBoard", function(data) {
-    console.log(data + " cleared the board.");
-    $("body").effect("shake");
+socket.on("clearBoard", function(user, silent) {
+    if (!silent) {
+        console.log(user + " cleared the board.");
+        $("body").effect("shake", {times: 2});
+    }
     board = [];
 });
 
@@ -133,7 +132,6 @@ socket.on("serverData", function(data) {
 
 socket.on("disconnect", function(data) {
     console.log("Disconnected");
-    clearBoard();
 });
 
 // Client

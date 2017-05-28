@@ -76,7 +76,7 @@ input[type="text"] {
     padding: .5em;
     color: #555;
     font-family: "Ubuntu";
-    transition: ease .2s;
+    transition: border .1s ease;
 }
 input[type="text"]:focus {
     border: 2px solid cadetblue;

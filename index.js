@@ -16,6 +16,7 @@ io.on("connection", function(socket) {
     server.users.push({
         id: socket.id
     })
+    socket.emit("clearBoard", "Server", true);
 
     // Send connecting user the board
     socket.emit("userInit", server.board);
@@ -25,18 +26,16 @@ io.on("connection", function(socket) {
         io.emit("createObj", data);
     });
 
-    socket.on("clearOwnBoard", function(owner) {
-        for (var i in server.board) {
-            if (server.board[i].owner == owner) {
-                server.board.splice(i, 1);
-            }
-        }
-        io.emit("clearOwnBoard", owner);
+    socket.on("clearOwnBoard", function(user) {
+        server.board = server.board.filter(function(value, index, array) {
+            return (value.owner != user);
+        });
+        io.emit("clearOwnBoard", user);
     });
 
-    socket.on("clearBoard", function(data) {
+    socket.on("clearBoard", function(user) {
         server.board = [];
-        io.emit("clearBoard", data);
+        io.emit("clearBoard", user);
     });
 
     socket.on("chatMessage", function(data) {
