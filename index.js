@@ -6,8 +6,7 @@ const port = process.env.PORT || 3000;
 
 var server = {
     users: [],
-    board: [],
-    chat: []
+    board: []
 };
 
 app.use(express.static(__dirname + "/public"));

@@ -11,10 +11,15 @@ var mouse = {
     x: 0,
     y: 0
 };
-
 var player = {
     color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
 };
+
+// Client init
+$(function() {
+    $("#color").val(player.color);
+});
+
 
 $("canvas").mousedown(function() {
     mouse.down = true;
@@ -24,17 +29,6 @@ $("canvas").mousedown(function() {
 $("canvas").mouseup(function() {
     mouse.down = false;
 });
-
-/* Scaling (pointless)
-$(document).keypress(function(e) {
-    if (e.key == "=") {
-        ctx.scale(.95, .95);
-    }
-
-    if (e.key == "-") {
-        ctx.scale(1.05, 1.05);
-    }
-});*/
 
 // Send events
 $("canvas").mousemove(function(e) {
@@ -63,20 +57,11 @@ $("#console input").on("keyup", function(e) {
 function newObject() {
     var obj = {
         pos: [mouse.x, mouse.y],
-        size: 25,
+        size: 20,
         color: player.color,
         owner: socket.id,
     };
-
     obj.pos = [obj.pos[0] - obj.size/2, obj.pos[1] - obj.size/2];
-
-    // Verify that there are no null properties
-    /*for (var prop in obj) {
-        if (!obj[prop]) {
-            console.warn("Object has null values, ignoring");
-            return;
-        }
-    }*/
 
     socket.emit("createObj", obj);
 }
@@ -90,8 +75,13 @@ function clearBoard() {
 }
 
 $("#apply").click(function() {
-    console.log("Applying new settings")
-    player.color = $("#color").val().split(",");
+    console.log("Applying new settings");
+
+    var color = $("#color").val().split(",");
+    for (var i in color) {
+        if (!color[i]) continue; // don't apply null values
+        player.color[i] = parseInt(color[i]);
+    }
 });
 
 // Receive events
@@ -150,19 +140,12 @@ socket.on("disconnect", function(data) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    //if (board.length > 0) { hopefully not needed
-        for (var i in board) {
-            var obj = board[i];
+    for (var i in board) {
+        var obj = board[i];
 
-            if (!obj.color) {
-                console.error("Object structure incorrect");
-                return;
-            }
-
-            ctx.fillStyle = toHexColor(obj.color);
-            ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
-        }
-    //}
+        ctx.fillStyle = toHexColor(obj.color);
+        ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
+    }
 
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
