@@ -1,5 +1,5 @@
 var socket = io();
-var canvas = document.getElementById("mainCanvas");
+var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
 var lastFrame;
@@ -12,6 +12,7 @@ var mouse = {
     y: 0
 };
 var player = {
+    name: prompt("Enter a name"),
     color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
 };
 
@@ -19,14 +20,22 @@ var player = {
 $(function() {
     $("#color").val(player.color);
 });
-
-
+/*
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+    $("canvas").touchstart(function(){
+        touch.start = true;
+        touch
+        newObject();
+}) else {
+        
+    };
+}
+*/
 $("canvas").mousedown(function() {
-    mouse.down = true;
-    newObject();
+        mouse.down = true;
+        newObject();
 });
-
-$("canvas").mouseup(function() {
+$("canvas").mo useup(function() {
     mouse.down = false;
 });
 
@@ -47,7 +56,7 @@ $("#console input").on("keyup", function(e) {
     if (e.keyCode == 13) {
         socket.emit("chatMessage", {
             msg: $(this).val(),
-            user: socket.id,
+            user: player.name,
             color: player.color
         });
         $(this).val("");
