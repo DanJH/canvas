@@ -38,6 +38,10 @@ io.on("connection", function(socket) {
         io.emit("clearBoard", user);
     });
 
+    socket.on("gameStart"), function(user) {
+        io.emit("gameStart", user);
+    }
+
     socket.on("chatMessage", function(data) {
         io.emit("chatMessage", data);
     });
