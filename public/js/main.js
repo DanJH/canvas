@@ -14,7 +14,23 @@ var player = {
     name: prompt("Enter a name"),
     color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
 };
-var words = new Array("car", "house", "dog", "cat", "fishing", "sunglasses", "bed", "leaf", "tree", "castle", "feet", "robot", "laser", "storm", "TV", "horse", "boat");
+var words = new Array(
+    "car",
+    "house",
+    "dog",
+    "cat",
+    "fishing",
+    "sunglasses", "bed",
+    "leaf",
+    "tree",
+    "castle",
+    "feet", "robot",
+    "laser",
+    "storm",
+    "TV",
+    "horse",
+    "boat"
+    );
 var randomNumber = rand(0, words.length - 1);
 // Client init
 $(function() {
@@ -102,7 +118,11 @@ function gameStart() {
 
 function timer() {
     socket.emit("time", socket.id);
+    var oneMinute = 60,
+        display = $('#time');
+    startTimer(oneMinutes, display);
 }
+
 function clearBoard() {
     socket.emit("clearBoard", socket.id);
 }
@@ -155,12 +175,7 @@ socket.on("chatMessage", function(data) {
 socket.on("gameStart", function(user){
     if (!silent) {
         console.log(user + " started a game.");
-    jQuery(function ($) {
-    var oneMinute = 60,
-        display = $('#time');
-    startTimer(oneMinutes, display);
-    });
-    }
+    
 }
 
 
