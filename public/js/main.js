@@ -5,13 +5,23 @@ var ctx = canvas.getContext("2d");
 var lastFrame;
 var fps;
 var oneMinute = 60;
-
+var playerTurn = 0;
+var timer = 60;
 var board = [];
 var mouse = {
     down: false,
     x: 0,
     y: 0
 };
+
+function countdownTimer() {
+    while (timer < 1) {
+        setInterval(function() {
+            timer = timer - 1
+        }, 1000);
+    }
+};
+
 var player = {
     name: prompt("Enter a name"),
     color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
@@ -38,6 +48,8 @@ var words = [
 
 var randomNumber = randRange(0, words.length - 1);
 // Client init
+
+
 $(function() {
     $("#color").val(player.color);
 });
@@ -75,7 +87,7 @@ $("#console input").on("keyup", function(e) {
 });
 
 function newObject() {
-    var obj = {
+    var obj = { 
         pos: [mouse.x, mouse.y],
         size: 10,
         color: player.color,
@@ -142,10 +154,12 @@ socket.on("clearBoard", function(user, silent) {
 
 socket.on("chatMessage", function(data) {
     $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 6) + '</span>' + data.msg + '</li>');
-});
+})
 
 socket.on("gameStart", function(user) {
     console.log(user + " started a game.");
+    var word = word[randomNumber];
+    
 });
 
 
