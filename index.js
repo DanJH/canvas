@@ -1,4 +1,4 @@
-const express = require("express");
+    const express = require("express");
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
@@ -18,29 +18,34 @@ io.on("connection", function(socket) {
     })
     socket.emit("clearBoard", "Server", true);
 
-    // Send connecting user the board
-    socket.emit("userInit", server.board);
+    // Send connecting socket.id the board
+    socket.emit("socket.idInit", server.board);
 
     socket.on("createObj", function(data) {
         server.board.push(data);
         io.emit("createObj", data);
     });
 
-    socket.on("clearOwnBoard", function(user) {
+    socket.on("gameStart", function() {
+        // Create a timer
+        /*var time = 60;
+        setInterval(function() {
+            
+            time--;
+        }, 1000);   */   
+    });
+
+    socket.on("clearOwnBoard", function() {
         server.board = server.board.filter(function(value, index, array) {
-            return (value.owner != user);
+            return (value.owner != socket.id);
         });
-        io.emit("clearOwnBoard", user);
+        io.emit("clearOwnBoard", socket.id);
     });
 
-    socket.on("clearBoard", function(user) {
+    socket.on("clearBoard", function() {
         server.board = [];
-        io.emit("clearBoard", user);
+        io.emit("clearBoard", socket.id);
     });
-
-    socket.on("gameStart"), function(user) {
-        io.emit("gameStart", user);
-    }
 
     socket.on("chatMessage", function(data) {
         io.emit("chatMessage", data);

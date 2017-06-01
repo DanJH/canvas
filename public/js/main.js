@@ -4,6 +4,8 @@ var ctx = canvas.getContext("2d");
 
 var lastFrame;
 var fps;
+var oneMinute = 60;
+
 var board = [];
 var mouse = {
     down: false,
@@ -14,24 +16,27 @@ var player = {
     name: prompt("Enter a name"),
     color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
 };
-var words = new Array(
+var words = [
     "car",
     "house",
     "dog",
     "cat",
     "fishing",
-    "sunglasses", "bed",
+    "sunglasses",
+    "bed",
     "leaf",
     "tree",
     "castle",
-    "feet", "robot",
+    "feet",
+    "robot" ,
     "laser",
     "storm",
     "TV",
     "horse",
     "boat"
-    );
-var randomNumber = rand(0, words.length - 1);
+];
+
+var randomNumber = randRange(0, words.length - 1);
 // Client init
 $(function() {
     $("#color").val(player.color);
@@ -69,24 +74,6 @@ $("#console input").on("keyup", function(e) {
     }
 });
 
-function timer(duration, display) {
-    var timer = duration, minutes, seconds;
-    setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
-
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        display.textContent = minutes + ":" + seconds;
-
-        if (--timer < 0) {
-            timer = duration;
-        }
-    }, 1000);
-}
-
-
 function newObject() {
     var obj = {
         pos: [mouse.x, mouse.y],
@@ -100,31 +87,16 @@ function newObject() {
 }
 
 function clearOwnBoard() {
-    socket.emit("clearOwnBoard", socket.id);
+    socket.emit("clearOwnBoard");
 }
-
-function rand(min, max) {
-  var offset = min;
-  var range = (max - min) + 1;
-
-  var randomNumber = Math.floor( Math.random() * range) + offset;
-  return randomNumber;
-}
-
 
 function gameStart() {
-    socket.emit("gameStart", socket.id);
+    socket.emit("gameStart");
 }
 
-function timer() {
-    socket.emit("time", socket.id);
-    var oneMinute = 60,
-        display = $('#time');
-    startTimer(oneMinutes, display);
-}
 
 function clearBoard() {
-    socket.emit("clearBoard", socket.id);
+    socket.emit("clearBoard");
 }
 
 $("#apply").click(function() {
@@ -172,11 +144,9 @@ socket.on("chatMessage", function(data) {
     $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 6) + '</span>' + data.msg + '</li>');
 });
 
-socket.on("gameStart", function(user){
-    if (!silent) {
-        console.log(user + " started a game.");
-    
-}
+socket.on("gameStart", function(user) {
+    console.log(user + " started a game.");
+});
 
 
 socket.on("serverData", function(data) {
@@ -208,6 +178,10 @@ function draw() {
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
     ctx.fillText("fps: " + fps, canvas.width - 100, 30);
+
+    socket.emit("timer");
+    ctx.font="16px Ubuntu";
+    ctx.fillText("sec: meme", canvas.width - 100, 60);
     
     // Get frames per second
     if (!lastFrame) {
