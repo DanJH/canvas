@@ -15,10 +15,10 @@ var mouse = {
 };
 
 function countdownTimer() {
-    while (timer < 1) {
+    while (timer > 0) {
         setInterval(function() {
             timer = timer - 1
-        }, 1000);
+        }, 1);
     }
 };
 
@@ -59,7 +59,7 @@ $("canvas").mousedown(function() {
         newObject();
 });
 $("canvas").mouseup(function() {
-    mouse.down = false;
+    mouse.down= false;
 });
 
 // Send events
@@ -158,7 +158,8 @@ socket.on("chatMessage", function(data) {
 
 socket.on("gameStart", function(user) {
     console.log(user + " started a game.");
-    var word = word[randomNumber];
+    countdownTimer();
+    //var word = word[randomNumber];
     
 });
 
@@ -192,10 +193,9 @@ function draw() {
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
     ctx.fillText("fps: " + fps, canvas.width - 100, 30);
-
-    socket.emit("timer");
+    timer = timer - 1
     ctx.font="16px Ubuntu";
-    ctx.fillText("sec: meme", canvas.width - 100, 60);
+    ctx.fillText("sec: " + timer, canvas.width - 100, 60);
     
     // Get frames per second
     if (!lastFrame) {
