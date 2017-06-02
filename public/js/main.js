@@ -14,13 +14,14 @@ var mouse = {
     y: 0
 };
 
-function countdownTimer() {
-    while (timer > 0) {
+
+/*function countdownTimer() {
+   // while (timer > 0) {
         setInterval(function() {
             timer = timer - 1
-        }, 1);
-    }
-};
+        }, 1000);
+  //  }
+};*/
 
 var player = {
     name: prompt("Enter a name"),
@@ -158,7 +159,7 @@ socket.on("chatMessage", function(data) {
 
 socket.on("gameStart", function(user) {
     console.log(user + " started a game.");
-    countdownTimer();
+    //countdownTimer();
     //var word = word[randomNumber];
     
 });
@@ -178,7 +179,7 @@ socket.on("serverData", function(data) {
 socket.on("disconnect", function(data) {
     console.log("Disconnected");
 });
-
+var zed = 100000
 // Client
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -189,13 +190,13 @@ function draw() {
         ctx.fillStyle = toHexColor(obj.color);
         ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
     }
-
+    zed = zed - 1;
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
     ctx.fillText("fps: " + fps, canvas.width - 100, 30);
-    timer = timer - 1
+
     ctx.font="16px Ubuntu";
-    ctx.fillText("sec: " + timer, canvas.width - 100, 60);
+    ctx.fillText("sec: " + zed, canvas.width - 100, 60);
     
     // Get frames per second
     if (!lastFrame) {

@@ -11,7 +11,7 @@ var server = {
 
 app.use(express.static(__dirname + "/public"));
 io.on("connection", function(socket) {
-    //console.log(socket.handshake.address + " connected.")
+    console.log(socket.id, "connected");
 
     server.users.push({
         id: socket.id
@@ -27,12 +27,7 @@ io.on("connection", function(socket) {
     });
 
     socket.on("gameStart", function() {
-        // Create a timer
-        /*var time = 60;
-        setInterval(function() {
-            
-            time--;
-        }, 1000);   */   
+        io.emit("gameStart");  
     });
 
     socket.on("clearOwnBoard", function() {
