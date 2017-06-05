@@ -96,6 +96,7 @@ function gameStart() {
     socket.emit("timerStart");
     var gang = randRange(0,10);
     var word = words[gang];
+
     //socket.emit(wor
 }
 
@@ -202,16 +203,17 @@ function draw() {
         alert("Time's up!")
         zed = 0;
         timer = 3600;
-        outputColor = '#111'
+        outputColor = '#111';
+        clearBoard();
     }
     var timed = Math.floor(timer/60);
       if (timed < 10) {
           outputColor = '#FF0000';
             }
-     ctx.fillStyle = "#111";
+     ctx.fillStyle = outputColor;
      ctx.font="16px Ubuntu";
      ctx.fillText("sec: " + timed, canvas.width - 100, 60);
-     ctx.fillStyle = outputColor;
+     ctx.fillStyle = '#111';
      ctx.font="16px Ubuntu";
      ctx.fillText("Word: " + str, canvas.width - 100, 90);
     // Get frames per second
