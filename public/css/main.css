@@ -69,7 +69,6 @@ a:hover { background: #3c8386; }
     background: #C0392B;
 }
 .red:hover { background: #9B2114; }
-
 input[type="text"] {
     border: 2px solid #ccc;
     margin-bottom: .5em;

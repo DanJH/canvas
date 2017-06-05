@@ -1,27 +1,24 @@
+//Variable launch
 var socket = io();
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
-
+var outputColor = '#111'
 var lastFrame;
 var fps;
-var timer = 600;
+var timer = 3600;
 var zed = 0;
 var playerTurn = 0;
 var board = [];
-
 var mouse = {
     down: false,
     x: 0,
     y: 0
 };
-
-
-
 var player = {
     name: prompt("Enter a name"),
     color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
 };
-var words = new Array[
+var words = [
     "car",
     "house",
     "dog",
@@ -41,11 +38,7 @@ var words = new Array[
     "boat"
 ];
 
-
-//var randomNumber = 
-// Client init
-
-
+//Client Init
 $(function() {
     $("#color").val(player.color);
 });
@@ -100,7 +93,10 @@ function clearOwnBoard() {
 
 function gameStart() {
     socket.emit("gameStart");
-    socket.emit("timerStart")
+    socket.emit("timerStart");
+    var gang = randRange(0,10);
+    var word = words[gang];
+    //socket.emit(wor
 }
 
 
@@ -129,7 +125,7 @@ socket.on("userInit", function(data) {
         board.push(data[i]);
     }
     console.log("Fetched " + data.length + " indices");
-});
+});``
 
 socket.on("createObj", function(data) {
     board.push(data);
@@ -154,9 +150,10 @@ socket.on("chatMessage", function(data) {
 })
 
 socket.on("gameStart", function() {
-    //if (x == 1) {}
+    socket.emit()
+
     socket.emit("timerStart");
-    timer = 600; // per 60 second interval
+    timer = 3600; // per 60 second interval
     
 });
 
@@ -180,8 +177,8 @@ var str = words[randRange(0, 15)]; //issue
 
 socket.on("timerStart", function() {
     zed = 1;
-    alert(str);
 });
+
 // Client
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -204,13 +201,17 @@ function draw() {
     if (timer == 0) {
         alert("Time's up!")
         zed = 0;
-        timer = 600;
+        timer = 3600;
+        outputColor = '#111'
     }
     var timed = Math.floor(timer/60);
+      if (timed < 10) {
+          outputColor = '#FF0000';
+            }
      ctx.fillStyle = "#111";
      ctx.font="16px Ubuntu";
      ctx.fillText("sec: " + timed, canvas.width - 100, 60);
-      ctx.fillStyle = "#111";
+     ctx.fillStyle = outputColor;
      ctx.font="16px Ubuntu";
      ctx.fillText("Word: " + str, canvas.width - 100, 90);
     // Get frames per second

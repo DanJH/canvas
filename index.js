@@ -19,7 +19,7 @@ io.on("connection", function(socket) {
     socket.emit("clearBoard", "Server", true);
 
     // Send connecting socket.id the board
-    socket.emit("socket.idInit", server.board);
+    socket.emit("playerInit", server.board);
 
     socket.on("createObj", function(data) {
         server.board.push(data);
@@ -27,9 +27,11 @@ io.on("connection", function(socket) {
     });
 
     socket.on("gameStart", function() {
-        console.log("Game started")
+        console.log("Game started");
+        
         io.emit("timerStart");
-        io.emit("gameStart");  
+        io.emit("gameStart");
+
     });
     
     socket.on("clearOwnBoard", function() {
