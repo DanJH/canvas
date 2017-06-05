@@ -27,9 +27,11 @@ io.on("connection", function(socket) {
     });
 
     socket.on("gameStart", function() {
+        console.log("Game started")
+        io.emit("timerStart");
         io.emit("gameStart");  
     });
-
+    
     socket.on("clearOwnBoard", function() {
         server.board = server.board.filter(function(value, index, array) {
             return (value.owner != socket.id);

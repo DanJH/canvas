@@ -4,9 +4,9 @@ var ctx = canvas.getContext("2d");
 
 var lastFrame;
 var fps;
-var oneMinute = 60;
+var timer = 600;
+var zed = 0;
 var playerTurn = 0;
-var timer = 60;
 var board = [];
 var mouse = {
     down: false,
@@ -15,13 +15,6 @@ var mouse = {
 };
 
 
-/*function countdownTimer() {
-   // while (timer > 0) {
-        setInterval(function() {
-            timer = timer - 1
-        }, 1000);
-  //  }
-};*/
 
 var player = {
     name: prompt("Enter a name"),
@@ -47,7 +40,7 @@ var words = [
     "boat"
 ];
 
-var randomNumber = randRange(0, words.length - 1);
+//var randomNumber = 
 // Client init
 
 
@@ -105,6 +98,7 @@ function clearOwnBoard() {
 
 function gameStart() {
     socket.emit("gameStart");
+    socket.emit("timerStart")
 }
 
 
@@ -157,12 +151,13 @@ socket.on("chatMessage", function(data) {
     $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 6) + '</span>' + data.msg + '</li>');
 })
 
-socket.on("gameStart", function(user) {
-    console.log(user + " started a game.");
-    //countdownTimer();
-    //var word = word[randomNumber];
+socket.on("gameStart", function() {
+    //if (x == 1) {}
+    socket.emit("timerStart");
+    timer = 600; // per 60 second interval
     
 });
+
 
 
 socket.on("serverData", function(data) {
@@ -179,7 +174,12 @@ socket.on("serverData", function(data) {
 socket.on("disconnect", function(data) {
     console.log("Disconnected");
 });
-var zed = 100000
+
+socket.on("timerStart", function() {
+    zed = 1;
+    var word = words[randRange[0, length(words)-1]]
+    alert(word);
+});
 // Client
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -190,14 +190,24 @@ function draw() {
         ctx.fillStyle = toHexColor(obj.color);
         ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
     }
-    zed = zed - 1;
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
     ctx.fillText("fps: " + fps, canvas.width - 100, 30);
-
-    ctx.font="16px Ubuntu";
-    ctx.fillText("sec: " + zed, canvas.width - 100, 60);
-    
+    if (zed == 1) {
+        timer = timer - 1;
+            if (timer < 1) {
+                timer = 0;
+         };
+        };
+    if (timer == 0) {
+        alert("Time's up!")
+        zed = 0;
+        timer = 600;
+    }
+    var timed = Math.floor(timer/60);
+     ctx.fillStyle = "#111";
+     ctx.font="16px Ubuntu";
+     ctx.fillText("sec: " + timed, canvas.width - 100, 60);
     // Get frames per second
     if (!lastFrame) {
         lastFrame = Date.now();
