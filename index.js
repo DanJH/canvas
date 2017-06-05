@@ -1,4 +1,4 @@
-    const express = require("express");
+const express = require("express");
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
@@ -11,11 +11,11 @@ var server = {
 
 app.use(express.static(__dirname + "/public"));
 io.on("connection", function(socket) {
-    console.log(socket.id, "connected");
-
     server.users.push({
         id: socket.id
-    })
+        
+    });
+    console.log(socket.id, "connected");
     socket.emit("clearBoard", "Server", true);
 
     // Send connecting socket.id the board
