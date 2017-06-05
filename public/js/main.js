@@ -14,10 +14,7 @@ var mouse = {
     x: 0,
     y: 0
 };
-var player = {
-    name: prompt("Enter a name"),
-    color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
-};
+var word = '';
 var words = [
     "car",
     "house",
@@ -37,6 +34,11 @@ var words = [
     "horse",
     "boat"
 ];
+var player = {
+    name: prompt("Enter a name"),
+    color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
+};
+
 
 //Client Init
 $(function() {
@@ -95,7 +97,7 @@ function gameStart() {
     socket.emit("gameStart");
     socket.emit("timerStart");
     var gang = randRange(0,10);
-    var word = words[gang];
+    word = words[gang];
 
     //socket.emit(wor
 }
@@ -151,9 +153,8 @@ socket.on("chatMessage", function(data) {
 })
 
 socket.on("gameStart", function() {
-    socket.emit()
-
     socket.emit("timerStart");
+    socket.emit("clearBoard")
     timer = 3600; // per 60 second interval
     
 });
@@ -174,7 +175,7 @@ socket.on("serverData", function(data) {
 socket.on("disconnect", function(data) {
     console.log("Disconnected");
 });
-var str = words[randRange(0, 15)]; //issue
+
 
 socket.on("timerStart", function() {
     zed = 1;
@@ -204,7 +205,7 @@ function draw() {
         zed = 0;
         timer = 3600;
         outputColor = '#111';
-        clearBoard();
+        socket.emit("clearBoard")
     }
     var timed = Math.floor(timer/60);
       if (timed < 10) {
@@ -215,7 +216,7 @@ function draw() {
      ctx.fillText("sec: " + timed, canvas.width - 100, 60);
      ctx.fillStyle = '#111';
      ctx.font="16px Ubuntu";
-     ctx.fillText("Word: " + str, canvas.width - 100, 90);
+     ctx.fillText("Word: " + word, canvas.width - 100, 90);
     // Get frames per second
     if (!lastFrame) {
         lastFrame = Date.now();

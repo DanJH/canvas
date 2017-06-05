@@ -3,15 +3,33 @@ const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const port = process.env.PORT || 3000;
-
 var server = {
     users: [],
     board: []
 };
+var words = [
+    "car",
+    "house",
+    "dog",
+    "cat",
+    "fishing",
+    "sunglasses",
+    "bed",
+    "leaf",
+    "tree",
+    "castle",
+    "feet",
+    "robot" ,
+    "laser",
+    "storm",
+    "TV",
+    "horse",
+    "boat"
+];
 
 app.use(express.static(__dirname + "/public"));
 io.on("connection", function(socket) {
-    server.users.push({
+    server.users.push({ 
         id: socket.id
         
     });
@@ -28,7 +46,6 @@ io.on("connection", function(socket) {
 
     socket.on("gameStart", function() {
         console.log("Game started");
-        
         io.emit("timerStart");
         io.emit("gameStart");
 
@@ -44,6 +61,10 @@ io.on("connection", function(socket) {
     socket.on("clearBoard", function() {
         server.board = [];
         io.emit("clearBoard", socket.id);
+    });
+
+    socket.on("guessMessage", function(data) {
+        io.emit("guessMessage", data);
     });
 
     socket.on("chatMessage", function(data) {
