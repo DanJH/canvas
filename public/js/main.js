@@ -8,6 +8,7 @@ var timer = 600;
 var zed = 0;
 var playerTurn = 0;
 var board = [];
+
 var mouse = {
     down: false,
     x: 0,
@@ -20,7 +21,7 @@ var player = {
     name: prompt("Enter a name"),
     color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
 };
-var words = [
+var words = new Array[
     "car",
     "house",
     "dog",
@@ -39,6 +40,7 @@ var words = [
     "horse",
     "boat"
 ];
+
 
 //var randomNumber = 
 // Client init
@@ -174,11 +176,11 @@ socket.on("serverData", function(data) {
 socket.on("disconnect", function(data) {
     console.log("Disconnected");
 });
+var str = words[randRange(0, 15)]; //issue
 
 socket.on("timerStart", function() {
     zed = 1;
-    var word = words[randRange[0, length(words)-1]]
-    alert(word);
+    alert(str);
 });
 // Client
 function draw() {
@@ -208,6 +210,9 @@ function draw() {
      ctx.fillStyle = "#111";
      ctx.font="16px Ubuntu";
      ctx.fillText("sec: " + timed, canvas.width - 100, 60);
+      ctx.fillStyle = "#111";
+     ctx.font="16px Ubuntu";
+     ctx.fillText("Word: " + str, canvas.width - 100, 90);
     // Get frames per second
     if (!lastFrame) {
         lastFrame = Date.now();
