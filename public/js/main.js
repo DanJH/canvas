@@ -32,10 +32,10 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
 }
 */
 $("canvas").mousedown(function() {
-        mouse.down = true;
-        newObject();
+    mouse.down = true;
+    drawLine();
 });
-$("canvas").mo useup(function() {
+$("canvas").mouseup(function() {
     mouse.down = false;
 });
 
@@ -48,7 +48,7 @@ $("canvas").mousemove(function(e) {
 
     // Draw when dragging
     if (mouse.down) {
-        newObject();
+        drawLine();
     }
 });
 
@@ -63,7 +63,22 @@ $("#console input").on("keyup", function(e) {
     }
 });
 
-function newObject() {
+function drawLine() {
+    var obj = {
+        pos: {
+            start: [mouse.x, mouse.y],
+            end: [mouse.x+150, mouse.y+150]
+        },
+        size: 20,
+        color: player.color,
+        owner: socket.id,
+    };
+    obj.pos = [obj.pos[0] - obj.size/2, obj.pos[1] - obj.size/2];
+
+    socket.emit("draw", obj);
+}
+
+function drawSquare() {
     var obj = {
         pos: [mouse.x, mouse.y],
         size: 20,
@@ -72,7 +87,7 @@ function newObject() {
     };
     obj.pos = [obj.pos[0] - obj.size/2, obj.pos[1] - obj.size/2];
 
-    socket.emit("createObj", obj);
+    socket.emit("draw", obj);
 }
 
 function clearOwnBoard() {
@@ -106,7 +121,7 @@ socket.on("userInit", function(data) {
     console.log("Fetched " + data.length + " indices");
 });
 
-socket.on("createObj", function(data) {
+socket.on("draw", function(data) {
     board.push(data);
 });
 

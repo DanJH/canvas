@@ -21,9 +21,9 @@ io.on("connection", function(socket) {
     // Send connecting user the board
     socket.emit("userInit", server.board);
 
-    socket.on("createObj", function(data) {
+    socket.on("draw", function(data) {
         server.board.push(data);
-        io.emit("createObj", data);
+        io.emit("draw", data);
     });
 
     socket.on("clearOwnBoard", function(user) {
