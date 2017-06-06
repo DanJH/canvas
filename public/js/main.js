@@ -14,6 +14,7 @@ var mouse = {
     x: 0,
     y: 0
 };
+var gameStarted = false;
 var word = '';
 var words = [
     "car",
@@ -80,7 +81,7 @@ $("#console input").on("keyup", function(e) {
 function newObject() {
     var obj = { 
         pos: [mouse.x, mouse.y],
-        size: 10,
+        size:   10,
         color: player.color,
         owner: socket.id,
     };
@@ -98,10 +99,18 @@ function gameStart() {
     socket.emit("timerStart");
     var gang = randRange(0,10);
     word = words[gang];
+    socket.emit(word);
 
     //socket.emit(wor
 }
 
+function correctGuess() {
+    socket.emit("correctGuess")
+}
+
+function incorrectGuess() {
+    socket.emit("incorrectGuess")
+}
 
 function clearBoard() {
     socket.emit("clearBoard");
@@ -143,7 +152,6 @@ socket.on("clearOwnBoard", function(user) {
 socket.on("clearBoard", function(user, silent) {
     if (!silent) {
         console.log(user + " cleared the board.");
-        $("body").effect("shake", {times: 2});
     }
     board = [];
 });
@@ -153,6 +161,7 @@ socket.on("chatMessage", function(data) {
 })
 
 socket.on("gameStart", function() {
+    var gameStarted = true;
     socket.emit("timerStart");
     socket.emit("clearBoard")
     timer = 3600; // per 60 second interval
@@ -176,10 +185,25 @@ socket.on("disconnect", function(data) {
     console.log("Disconnected");
 });
 
+socket.on("correctGuess", function() {
+    if (gameStarted==true){
+        alert("Correct!");
+        timer = 0;
+    }
+});
+
+socket.on("incorrectGuess", function(){
+    if (gameStarted==true){
+        $("body").effect("shake", {times: 3});
+    }
+    
+});
 
 socket.on("timerStart", function() {
     zed = 1;
 });
+
+
 
 // Client
 function draw() {
@@ -187,9 +211,10 @@ function draw() {
     
     for (var i in board) {
         var obj = board[i];
-
+        ctx.beginPath();
+        ctx.arc(obj.pos[0], obj.pos[1], obj.size, 0, 2 * Math.PI);
         ctx.fillStyle = toHexColor(obj.color);
-        ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
+        ctx.fill();
     }
     ctx.fillStyle = "#111";
     ctx.font="16px Ubuntu";
@@ -205,7 +230,8 @@ function draw() {
         zed = 0;
         timer = 3600;
         outputColor = '#111';
-        socket.emit("clearBoard")
+        socket.emit("clearBoard");
+        gameStarted = false;
     }
     var timed = Math.floor(timer/60);
       if (timed < 10) {
@@ -216,7 +242,7 @@ function draw() {
      ctx.fillText("sec: " + timed, canvas.width - 100, 60);
      ctx.fillStyle = '#111';
      ctx.font="16px Ubuntu";
-     ctx.fillText("Word: " + word, canvas.width - 100, 90);
+     ctx.fillText("Word: " + word, canvas.width - 300, 30);
     // Get frames per second
     if (!lastFrame) {
         lastFrame = Date.now();

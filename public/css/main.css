@@ -15,6 +15,12 @@ canvas {
     cursor: default;
 }
 
+.center {
+    position: absolute;
+    top: 400;
+    left: 400;
+}
+
 .ui {
     position: absolute;
     top: 0;
@@ -67,6 +73,9 @@ a:hover { background: #3c8386; }
 }
 .red {
     background: #C0392B;
+}
+.green{
+    background: #008000;
 }
 .red:hover { background: #9B2114; }
 input[type="text"] {

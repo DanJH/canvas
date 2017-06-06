@@ -14,8 +14,9 @@
         <canvas id="canvas" width="800" height="600"></canvas>
 
         <div class="ui">
-            <a class="button" onclick="clearOwnBoard()">Clear self</a>
-            <a class="button red" onclick="clearBoard()">Clear all</a>
+            <a class="button red" onclick="clearBoard()">Clear board</a>
+            <a class="button green" onclick="correctGuess()">Correct</a>
+            <a class="button red" onclick="incorrectGuess()">Incorrect</a>
             <br>
             <input id="color" type="text" placeholder="example: 50,50,50">
             <br>
@@ -24,10 +25,9 @@
         </div>
 
 
-
         <div class="ui" id="console">
             <ul></ul>
-            <input type="text" placeholder="message">
+            <input type="text" placeholder="guess">
         </div>
         
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

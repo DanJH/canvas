@@ -71,6 +71,15 @@ io.on("connection", function(socket) {
         io.emit("chatMessage", data);
     });
 
+    socket.on("correctGuess", function(){
+        io.emit("correctGuess");
+    });
+    
+
+    socket.on("incorrectGuess", function(){
+        io.emit("incorrectGuess")
+    });
+
     socket.on("disconnect", function() {
         //console.log(socket.handshake.address + " disconnected.");
 
