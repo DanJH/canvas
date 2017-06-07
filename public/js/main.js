@@ -1,12 +1,13 @@
-//Variable launch
+/* variable launch */
 var socket = io();
+var lastFrame;
+var fps;
+var zed;
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var outputColor = '#111'
-var lastFrame;
-var fps;
+var gameStarted = false;
 var timer = 3600;
-var zed;
 var playerTurn = 0;
 var board = [];
 var mouse = {
@@ -14,7 +15,6 @@ var mouse = {
     x: 0,
     y: 0
 };
-var gameStarted = false;
 var word = '';
 var words = [
     "car",
@@ -41,15 +41,19 @@ var player = {
 };
 
 
-//Client Init
+
+/* Client init */
 $(function() {
     $("#color").val(player.color);
 });
 
+//Mouse down = draw
 $("canvas").mousedown(function() {
         mouse.down = true;
         newObject();
 });
+
+//Mouse up = no draw
 $("canvas").mouseup(function() {
     mouse.down= false;
 });
@@ -61,12 +65,13 @@ $("canvas").mousemove(function(e) {
     mouse.x = e.clientX - rect.left;
     mouse.y = e.clientY - rect.top;
 
-    // Draw when dragging
+    // Draw when dragging #Depreciated
     if (mouse.down) {
         newObject();
     }
 });
 
+//Message sent on "return"
 $("#console input").on("keyup", function(e) {
     if (e.keyCode == 13) {
         socket.emit("chatMessage", {
@@ -78,6 +83,7 @@ $("#console input").on("keyup", function(e) {
     }
 });
 
+//Creates circle
 function newObject() {
     var obj = { 
         pos: [mouse.x, mouse.y],
@@ -116,9 +122,9 @@ function clearBoard() {
     socket.emit("clearBoard");
 }
 
+//jquery apply button
 $("#apply").click(function() {
     console.log("Applying new settings");
-
     var color = $("#color").val().split(",");
     for (var i in color) {
         if (!color[i]) continue; // don't apply null values
@@ -126,7 +132,9 @@ $("#apply").click(function() {
     }
 });
 
-// Receive events
+
+
+/* Receive events */
 socket.on("connect", function() {
     console.log("User ID: " + socket.id);
 });
@@ -205,7 +213,7 @@ socket.on("timerStart", function() {
 
 
 
-// Client
+/* Client loop */
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
