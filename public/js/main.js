@@ -24,9 +24,9 @@ var player = {
 };
 
 // Client init
-$(function() {
-    resize();
+resize();
 
+$(function() {
     player.name = prompt("Enter a name");
     $("#color").val(player.color);
 
