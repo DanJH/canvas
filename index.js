@@ -4,7 +4,7 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const port = process.env.PORT || 3000;
 
-var server = {
+var game = {
     users: [],
     board: []
 };
@@ -13,28 +13,28 @@ app.use(express.static(__dirname + "/public"));
 io.on("connection", function(socket) {
     //console.log(socket.handshake.address + " connected.")
 
-    server.users.push({
+    game.users.push({
         id: socket.id
     })
     socket.emit("clearBoard", "Server", true);
 
-    // Send connecting user the board
-    socket.emit("userInit", server.board);
+    // Send connecting user existing game
+    socket.emit("userInit", game);
 
     socket.on("draw", function(data) {
-        server.board.push(data);
+        game.board.push(data);
         io.emit("draw", data);
     });
 
     socket.on("clearOwnBoard", function(user) {
-        server.board = server.board.filter(function(value, index, array) {
+        game.board = game.board.filter(function(value, index, array) {
             return (value.owner != user);
         });
         io.emit("clearOwnBoard", user);
     });
 
     socket.on("clearBoard", function(user) {
-        server.board = [];
+        game.board = [];
         io.emit("clearBoard", user);
     });
 
@@ -45,9 +45,9 @@ io.on("connection", function(socket) {
     socket.on("disconnect", function() {
         //console.log(socket.handshake.address + " disconnected.");
 
-        for (var i in server.users) {
-            if (server.users[i].id == socket.id) {
-                server.users.splice(i, 1);
+        for (var i in game.users) {
+            if (game.users[i].id == socket.id) {
+                game.users.splice(i, 1);
                 //io.emit("serverData", server);
             }
         }
