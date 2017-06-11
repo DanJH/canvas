@@ -15,17 +15,19 @@ var mouse = {
 };
 var player = {
     name,
-    color: [randRange(40, 200), randRange(40, 200), randRange(40, 200)]
+    color: toHexColor([randRange(40, 200), randRange(40, 200), randRange(40, 200)]),
+    size: 8
 };
+
 
 // Client init
 resize();
 
 $(document).ready(function() {
+    if (getCookie("username" == "")) player.name = prompt("Choose a name:");
+    $("#name").val(getCookie("username")).change();
     $("#color").val(player.color);
-
-    player.name = prompt("Enter a name");
-    setCookie("username", player.name);
+    $("#size").val(player.size);
 });
 
 // Send events
@@ -65,12 +67,10 @@ function drawLine() {
             start: [mouse.prevX, mouse.prevY],
             end: [mouse.x, mouse.y]
         },
-        size: 3,
+        size: player.size,
         color: player.color,
         owner: socket.id
     };
-
-    console.log(toHexColor(obj.color));
 
     socket.emit("draw", obj);
 }
@@ -79,7 +79,7 @@ function drawSquare() {
     var obj = {
         type: "square",
         pos: [mouse.x, mouse.y],
-        size: 20,
+        size: player.size,
         color: player.color,
         owner: socket.id
     };
@@ -93,14 +93,16 @@ function clearOwnBoard() {
 }
 
 function clearBoard() {
-    socket.emit("clearBoard", socket.id);
+    socket.emit("clearBoard", player.name);
 }
 
 
 // Send chat message on return
 $("#console input").on("keyup", function(e) {
     if (e.keyCode == 13) {
-        // Instead of storing a color in each message, store user data
+        if ($(this).val() == "") return;
+
+        // TODO: Instead of storing a color in each message, store user data
         socket.emit("chatMessage", {
             msg: $(this).val(),
             user: player.name,
@@ -110,15 +112,16 @@ $("#console input").on("keyup", function(e) {
     }
 });
 
-// Apply settings
-$("#apply").click(function() {
-    console.log("Applying new settings");
-
-    var color = $("#color").val().split(",");
-    for (var i in color) {
-        if (!color[i]) continue; // don't apply null values
-        player.color[i] = parseInt(color[i]);
-    }
+// Apply settings on input change
+$("#name").change(function() {
+    player.name = $(this).val();
+    setCookie("username", player.name);
+});
+$("#color").change(function() {
+    player.color = $(this).val();
+});
+$("#size").change(function() {
+    player.size = $(this).val();
 });
 
 // Receive events
@@ -128,11 +131,10 @@ socket.on("connect", function() {
 
 socket.on("userInit", function(data) {
     console.log("Receiving data from server...");
-    console.log(data);
     for (var i in data) {
         board.push(data[i]);
     }
-    console.log("Fetched " + data.board.length + " indices");
+    console.log("Fetched " + data.length + " indices");
 });
 
 socket.on("draw", function(data) {
@@ -148,13 +150,13 @@ socket.on("clearOwnBoard", function(user) {
 socket.on("clearBoard", function(user, silent) {
     if (!silent) {
         console.log(user + " cleared the board.");
-        $("body").effect("shake", {times: 2});
+        //$("body").effect("shake", {times: 2});
     }
     board = [];
 });
 
 socket.on("chatMessage", function(data) {
-    $("#console ul").append('<li><span style="color: ' + toHexColor(data.color) + '">' + data.user.substring(0, 6) + '</span>' + data.msg + '</li>');
+    $("#console ul").append('<li><span style="color: #' + data.color + '">' + data.user.substring(0, 12) + '</span>' + data.msg + '</li>');
 });
 
 socket.on("serverData", function(data) {
@@ -182,15 +184,15 @@ function draw() {
         
         switch (obj.type) {
             case "square":
-                ctx.fillStyle = toHexColor(obj.color);
+                ctx.fillStyle = "#" + obj.color;
                 ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
             case "line":
-                ctx.strokeStyle = toHexColor(obj.color);
+                ctx.strokeStyle = "#" + obj.color;
                 ctx.lineWidth = obj.size;
                 ctx.beginPath();
+                ctx.lineCap = "round";
                 ctx.moveTo(obj.pos.start[0], obj.pos.start[1]);
                 ctx.lineTo(obj.pos.end[0], obj.pos.end[1]);
-                ctx.closePath();
                 ctx.stroke();
         }
     }
@@ -234,7 +236,7 @@ function toHexColor(rgb) {
         var hex = rgb[i].toString(16);
         rgb[i] = hex.length == 1 ? "0" + hex : hex;
     }
-    return "#" + rgb[0] + rgb[1] + rgb[2];
+    return rgb[0] + rgb[1] + rgb[2];
 }
 
 function resize() {
