@@ -5,11 +5,6 @@ var ctx = canvas.getContext("2d");
 var lastFrame;
 var fps;
 
-var client = {
-    board: [],
-    player: []
-}
-
 var board = [];
 var mouse = {
     down: false,
@@ -26,33 +21,27 @@ var player = {
 // Client init
 resize();
 
-$(function() {
-    player.name = prompt("Enter a name");
+$(document).ready(function() {
     $("#color").val(player.color);
 
-    document.cookie = "username=" + player.name;
-});
-/*
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
-    $("canvas").touchstart(function(){
-        touch.start = true;
-        touch
-        newObject();
-}) else {
-        
-    };
-}
-*/
-$("canvas").mousedown(function() {
-    mouse.down = true;
-    drawLine();
-});
-$("canvas").mouseup(function() {
-    mouse.down = false;
+    player.name = prompt("Enter a name");
+    setCookie("username", player.name);
 });
 
 // Send events
-$("canvas").mousemove(function(e) {
+canvas.addEventListener('mousedown', onMouseDown, false);
+canvas.addEventListener('mouseup', onMouseUp, false);
+canvas.addEventListener('mouseout', onMouseUp, false);
+canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+
+function onMouseDown() {
+    mouse.down = true;
+}
+function onMouseUp() {
+    mouse.down = false;
+}
+
+function onMouseMove(e) {
     var rect = canvas.getBoundingClientRect();
     
     // Update the position of the mouse
@@ -64,20 +53,10 @@ $("canvas").mousemove(function(e) {
         drawLine();
     }
 
+    // Save the last position
     mouse.prevX = e.clientX - rect.left;
     mouse.prevY = e.clientY - rect.top;
-});
-
-$("#console input").on("keyup", function(e) {
-    if (e.keyCode == 13) {
-        socket.emit("chatMessage", {
-            msg: $(this).val(),
-            user: player.name,
-            color: player.color
-        });
-        $(this).val("");
-    }
-});
+};
 
 function drawLine() {
     var obj = {
@@ -86,10 +65,12 @@ function drawLine() {
             start: [mouse.prevX, mouse.prevY],
             end: [mouse.x, mouse.y]
         },
-        size: 5,
+        size: 3,
         color: player.color,
         owner: socket.id
     };
+
+    console.log(toHexColor(obj.color));
 
     socket.emit("draw", obj);
 }
@@ -115,6 +96,21 @@ function clearBoard() {
     socket.emit("clearBoard", socket.id);
 }
 
+
+// Send chat message on return
+$("#console input").on("keyup", function(e) {
+    if (e.keyCode == 13) {
+        // Instead of storing a color in each message, store user data
+        socket.emit("chatMessage", {
+            msg: $(this).val(),
+            user: player.name,
+            color: player.color
+        });
+        $(this).val("");
+    }
+});
+
+// Apply settings
 $("#apply").click(function() {
     console.log("Applying new settings");
 
@@ -132,6 +128,7 @@ socket.on("connect", function() {
 
 socket.on("userInit", function(data) {
     console.log("Receiving data from server...");
+    console.log(data);
     for (var i in data) {
         board.push(data[i]);
     }
@@ -182,7 +179,7 @@ function draw() {
     // Draw all objects
     for (var i in board) {
         var obj = board[i];
-
+        
         switch (obj.type) {
             case "square":
                 ctx.fillStyle = toHexColor(obj.color);
@@ -193,6 +190,7 @@ function draw() {
                 ctx.beginPath();
                 ctx.moveTo(obj.pos.start[0], obj.pos.start[1]);
                 ctx.lineTo(obj.pos.end[0], obj.pos.end[1]);
+                ctx.closePath();
                 ctx.stroke();
         }
     }
@@ -232,7 +230,11 @@ function randRange(a, b) {
 }
 
 function toHexColor(rgb) {
-    return "#" + rgb[0].toString(16)+rgb[1].toString(16)+rgb[2].toString(16);
+    for (var i in rgb) {
+        var hex = rgb[i].toString(16);
+        rgb[i] = hex.length == 1 ? "0" + hex : hex;
+    }
+    return "#" + rgb[0] + rgb[1] + rgb[2];
 }
 
 function resize() {
@@ -240,3 +242,26 @@ function resize() {
     ctx.canvas.height = window.innerHeight;
 }
 $(window).resize(resize);
+
+// Cookie functions taken from https://www.w3schools.com/js/js_cookies.asp
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}

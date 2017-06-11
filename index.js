@@ -18,8 +18,8 @@ io.on("connection", function(socket) {
     })
     socket.emit("clearBoard", "Server", true);
 
-    // Send connecting user existing game
-    socket.emit("userInit", game);
+    // Send connecting user existing board
+    socket.emit("userInit", game.board);
 
     socket.on("draw", function(data) {
         game.board.push(data);

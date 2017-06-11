@@ -3,10 +3,10 @@ html {
 }
 
 html, body {
-  width:  100%;
-  height: 100%;
-  margin: 0px;
-  overflow: hidden;
+    width:  100%;
+    height: 100%;
+    margin: 0px;
+    overflow: hidden;
 }
 
 canvas {
@@ -20,6 +20,7 @@ canvas {
     top: 0;
     left: 0;
     padding: 1.5em;
+    user-select: none;
 }
 
 #console {
@@ -58,7 +59,6 @@ a {
     color: white;
     font-family: "Ubuntu Condensed";
     cursor: pointer;
-    user-select: none;
 }
 a:hover { background: #3c8386; }
 .large {
