@@ -10,11 +10,10 @@
         <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
-        <canvas id="canvas" width="800" height="600"></canvas>
+        <canvas id="canvas" width="800" height="600" oncontextmenu="return false;"></canvas>
 
         <div class="ui">
-            <a class="button" onclick="clearOwnBoard()">Clear self</a>
-            <a class="button red" onclick="clearBoard()">Clear all</a>
+            <a class="button red" onclick="clearBoard()">Clear board</a>
             <h3>Name</h3>
             <input id="name" type="text" placeholder="username">
             <h3>Color</h3>

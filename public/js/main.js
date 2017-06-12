@@ -2,23 +2,18 @@ var socket = io();
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
-var lastFrame;
-var fps;
+var player = {
+    color: toHexColor([randRange(40, 200), randRange(40, 200), randRange(40, 200)]),
+    size: 8
+};
 
-var board = [];
 var mouse = {
-    down: false,
+    down: [],
     x: 0,
     y: 0,
     prevX: 0,
     prevY: 0
 };
-var player = {
-    name,
-    color: toHexColor([randRange(40, 200), randRange(40, 200), randRange(40, 200)]),
-    size: 8
-};
-
 
 // Client init
 resize();
@@ -40,11 +35,15 @@ canvas.addEventListener('mouseup', onMouseUp, false);
 canvas.addEventListener('mouseout', onMouseUp, false);
 canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
 
-function onMouseDown() {
-    mouse.down = true;
+function onMouseDown(e) {
+    mouse.down[e.button] = true;
+
+    if (e.button == 1) {
+        console.log(canvas.toDataURL());
+    }
 }
-function onMouseUp() {
-    mouse.down = false;
+function onMouseUp(e) {
+    mouse.down[e.button] = false;
 }
 
 function onMouseMove(e) {
@@ -54,9 +53,10 @@ function onMouseMove(e) {
     mouse.x = e.clientX - rect.left;
     mouse.y = e.clientY - rect.top;
 
-    // Draw when dragging
-    if (mouse.down) {
+    if (mouse.down[0]) {
         drawLine();
+    } else if (mouse.down[2]) {
+        erase();
     }
 
     // Save the last position
@@ -79,27 +79,22 @@ function drawLine() {
     socket.emit("draw", obj);
 }
 
-function drawSquare() {
+function erase() {
     var obj = {
-        type: "square",
-        pos: [mouse.x, mouse.y],
-        size: player.size,
-        color: player.color,
-        owner: socket.id
+        type: "eraser",
+        pos: {
+            start: [mouse.prevX, mouse.prevY],
+            end: [mouse.x, mouse.y]
+        },
+        size: player.size * 1.5
     };
-    obj.pos = [obj.pos[0] - obj.size/2, obj.pos[1] - obj.size/2];
 
     socket.emit("draw", obj);
-}
-
-function clearOwnBoard() {
-    socket.emit("clearOwnBoard", socket.id);
 }
 
 function clearBoard() {
     socket.emit("clearBoard", socket.username);
 }
-
 
 // Send chat message on return
 $("#console input").on("keyup", function(e) {
@@ -147,21 +142,18 @@ socket.on("connect", function() {
 
 socket.on("userInit", function(data) {
     console.log("Receiving data from server...");
+    
+    // Draw all objects
     for (var i in data) {
-        board.push(data[i]);
+        var obj = data[i];
+        
+        draw(obj);
     }
+
     console.log("Fetched " + data.length + " indices");
 });
 
-socket.on("draw", function(data) {
-    board.push(data);
-});
-
-socket.on("clearOwnBoard", function(user) {
-    board = board.filter(function(value, index, array) {
-        return (value.owner != user);
-    });
-});
+socket.on("draw", draw);
 
 socket.on("clearBoard", function(user, silent) {
     if (!silent) {
@@ -172,67 +164,40 @@ socket.on("clearBoard", function(user, silent) {
         });
         //$("body").effect("shake", {times: 2});
     }
-    board = [];
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
 socket.on("chatMessage", chatMessage);
-
-socket.on("serverData", function(data) {
-    // Display object as ul
-    $("ul").empty();
-    
-    $.each(data, function(i) {
-        // TODO: more accurately represent the data
-        var li = $('<li/>').appendTo($('#serverData ul'));
-        $('<span/>').text(i + ": " + JSON.stringify(data[i])).appendTo(li);
-    });
-});
 
 socket.on("disconnect", function(data) {
     console.log("Disconnected");
 });
 
 // Client
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw all objects
-    for (var i in board) {
-        var obj = board[i];
-        
-        switch (obj.type) {
-            case "square":
-                ctx.fillStyle = "#" + obj.color;
-                ctx.fillRect(obj.pos[0], obj.pos[1], obj.size, obj.size);
-            case "line":
-                ctx.strokeStyle = "#" + obj.color;
-                ctx.lineWidth = obj.size;
-                ctx.beginPath();
-                ctx.lineCap = "round";
-                ctx.moveTo(obj.pos.start[0], obj.pos.start[1]);
-                ctx.lineTo(obj.pos.end[0], obj.pos.end[1]);
-                ctx.stroke();
-        }
-    }
+function draw(obj) {
+    if (obj.type == "line") {
+        ctx.globalCompositeOperation = "source-over";
 
-    ctx.fillStyle = "#111";
-    ctx.font="16px Ubuntu";
-    ctx.fillText("fps: " + fps, canvas.width - 100, 30);
-    
-    // Get frames per second
-    if (!lastFrame) {
-        lastFrame = Date.now();
-        fps = 0;
-        return;
-    }
+        ctx.strokeStyle = "#" + obj.color;
+        ctx.lineWidth = obj.size;
+        ctx.beginPath();
+        ctx.lineCap = "round";
+        ctx.moveTo(obj.pos.start[0], obj.pos.start[1]);
+        ctx.lineTo(obj.pos.end[0], obj.pos.end[1]);
+        ctx.stroke();
+    } else if (obj.type == "eraser") {
+        ctx.globalCompositeOperation = "destination-out";
 
-    fps = Math.floor(1000/(Date.now() - lastFrame));
-    lastFrame = Date.now();
+        ctx.lineWidth = obj.size;
+        ctx.beginPath();
+        ctx.moveTo(obj.pos.start[0], obj.pos.start[1]);
+        ctx.lineTo(obj.pos.end[0], obj.pos.end[1]);
+        ctx.stroke();
+    }
 }
-setInterval(draw, 1000/60);
 
 function chatMessage(data) {
-    //`Fifteen is ${a + b}.`
     $("#console ul").append(`<li><span style="color: #${data.color}">${data.user.substring(0, 12)}</span>${data.msg}</li>`);
     $("#console ul").scrollTop($("#console ul")[0].scrollHeight); // auto scroll to bottom
 }
