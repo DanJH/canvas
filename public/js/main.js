@@ -22,12 +22,15 @@ var player = {
 
 // Client init
 resize();
+$("#color").spectrum({
+    color: player.color,
+    showPalette: true
+});
 
 $(document).ready(function() {
-    if (getCookie("username" == "")) player.name = prompt("Choose a name:");
-    
+    if (getCookie("username" == "")) socket.username = prompt("Choose a name:");
+
     $("#name").val(getCookie("username")).change();
-    $("#color").val(player.color);
     $("#size").val(player.size);
 });
 
@@ -94,7 +97,7 @@ function clearOwnBoard() {
 }
 
 function clearBoard() {
-    socket.emit("clearBoard", player.name);
+    socket.emit("clearBoard", socket.username);
 }
 
 
@@ -106,7 +109,7 @@ $("#console input").on("keyup", function(e) {
         // TODO: Instead of storing a color in each message, store user data
         socket.emit("chatMessage", {
             msg: $(this).val(),
-            user: player.name,
+            user: socket.username,
             color: player.color
         });
         $(this).val("");
@@ -125,12 +128,15 @@ $("input").change(function() {
                 });
                 return;
             }
-            player.name = $(this).val();
-            setCookie("username", player.name);
+            socket.username = $(this).val();
+            setCookie("username", socket.username);
         default:
             player[$(this).attr("id")] = $(this).val();
             break;
     }
+});
+$("#color").on('change.spectrum', function(e, color) {
+    player.color = color.toHex(false);
 });
 
 
@@ -228,7 +234,7 @@ setInterval(draw, 1000/60);
 function chatMessage(data) {
     //`Fifteen is ${a + b}.`
     $("#console ul").append(`<li><span style="color: #${data.color}">${data.user.substring(0, 12)}</span>${data.msg}</li>`);
-    $('#console ul').prop("scrollHeight"); // auto scroll to bottom
+    $("#console ul").scrollTop($("#console ul")[0].scrollHeight); // auto scroll to bottom
 }
 
 // Limit the number of events per second

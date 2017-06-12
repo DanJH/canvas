@@ -12,6 +12,8 @@ var game = {
 // TODO: thickness tweak
 
 app.use(express.static(__dirname + "/public"));
+http.listen(port, () => console.log("Listening on port " + port));
+
 io.on("connection", function(socket) {
     //console.log(socket.handshake.address + " connected.")
 
@@ -55,5 +57,3 @@ io.on("connection", function(socket) {
         }
     });
 });
-
-http.listen(port, () => console.log("Listening on port " + port));

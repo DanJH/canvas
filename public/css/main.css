@@ -42,18 +42,13 @@ h3 {
     padding: 0;
     max-height: 200px;
     max-width: 300px;
+    background: #eaeaea;
     word-wrap: break-word;
     overflow-y: scroll;
 }
-#console ul li {
-    background: #eee;
-}
-#console ul li:nth-child(odd) {
-    background: #eaeaea;
-}
+
 #console span {
     padding-right: 8px;
-    text-shadow: 1px 1px 0 rgba(150, 150, 150, 1);
 }
 
 #serverData {
@@ -61,7 +56,7 @@ h3 {
     right: 0;
 }
 
-a {
+.button {
     display: inline-block;
     margin: 0;    
     margin-bottom: 1em;
@@ -72,7 +67,7 @@ a {
     font-family: "Ubuntu Condensed";
     cursor: pointer;
 }
-a:hover { background: #3c8386; }
+.button:hover { background: #3c8386; }
 .large {
     margin-bottom: 1em;
     padding: 1em 2em;
