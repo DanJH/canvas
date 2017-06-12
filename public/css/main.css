@@ -53,6 +53,7 @@ h3 {
 }
 #console span {
     padding-right: 8px;
+    text-shadow: 1px 1px 0 rgba(150, 150, 150, 1);
 }
 
 #serverData {

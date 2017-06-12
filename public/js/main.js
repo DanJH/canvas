@@ -25,6 +25,7 @@ resize();
 
 $(document).ready(function() {
     if (getCookie("username" == "")) player.name = prompt("Choose a name:");
+    
     $("#name").val(getCookie("username")).change();
     $("#color").val(player.color);
     $("#size").val(player.size);
@@ -113,16 +114,25 @@ $("#console input").on("keyup", function(e) {
 });
 
 // Apply settings on input change
-$("#name").change(function() {
-    player.name = $(this).val();
-    setCookie("username", player.name);
+$("input").change(function() {
+    switch ($(this).attr("id")) {
+        case "name":
+            if ($(this).val().length < 3 || $(this).val().length > 12) {
+                chatMessage({
+                    msg: "Username invalid (between 3 and 12 char.)</i>",
+                    user: "<i>",
+                    color: player.color
+                });
+                return;
+            }
+            player.name = $(this).val();
+            setCookie("username", player.name);
+        default:
+            player[$(this).attr("id")] = $(this).val();
+            break;
+    }
 });
-$("#color").change(function() {
-    player.color = $(this).val();
-});
-$("#size").change(function() {
-    player.size = $(this).val();
-});
+
 
 // Receive events
 socket.on("connect", function() {
@@ -149,15 +159,17 @@ socket.on("clearOwnBoard", function(user) {
 
 socket.on("clearBoard", function(user, silent) {
     if (!silent) {
-        console.log(user + " cleared the board.");
+        chatMessage({
+            msg: user + " cleared the board.</i>",
+            user: "<i>",
+            color: "aa2222"
+        });
         //$("body").effect("shake", {times: 2});
     }
     board = [];
 });
 
-socket.on("chatMessage", function(data) {
-    $("#console ul").append('<li><span style="color: #' + data.color + '">' + data.user.substring(0, 12) + '</span>' + data.msg + '</li>');
-});
+socket.on("chatMessage", chatMessage);
 
 socket.on("serverData", function(data) {
     // Display object as ul
@@ -212,6 +224,12 @@ function draw() {
     lastFrame = Date.now();
 }
 setInterval(draw, 1000/60);
+
+function chatMessage(data) {
+    //`Fifteen is ${a + b}.`
+    $("#console ul").append(`<li><span style="color: #${data.color}">${data.user.substring(0, 12)}</span>${data.msg}</li>`);
+    $('#console ul').prop("scrollHeight"); // auto scroll to bottom
+}
 
 // Limit the number of events per second
 // (taken from socket.io demo)
