@@ -86,7 +86,7 @@ function erase() {
             start: [mouse.prevX, mouse.prevY],
             end: [mouse.x, mouse.y]
         },
-        size: player.size * 1.5
+        size: player.size * 3
     };
 
     socket.emit("draw", obj);
@@ -146,21 +146,25 @@ socket.on("userInit", function(data) {
     // Draw all objects
     for (var i in data) {
         var obj = data[i];
-        
         draw(obj);
     }
 
+    $("#indices").text(data.length + " indices");
     console.log("Fetched " + data.length + " indices");
 });
 
 socket.on("draw", draw);
 
+socket.on("indexCount", function(indices) {
+    $("#indices").text(indices + " indices");
+});
+
 socket.on("clearBoard", function(user, silent) {
     if (!silent) {
         chatMessage({
-            msg: user + " cleared the board.</i>",
-            user: "<i>",
-            color: "aa2222"
+            msg: " cleared the board.</i>",
+            user: "<i>" + user,
+            color: "222222"
         });
         //$("body").effect("shake", {times: 2});
     }
@@ -198,7 +202,7 @@ function draw(obj) {
 }
 
 function chatMessage(data) {
-    $("#console ul").append(`<li><span style="color: #${data.color}">${data.user.substring(0, 12)}</span>${data.msg}</li>`);
+    $("#console ul").append(`<li><span style="color: #${data.color}">${data.user.substring(0, 16)}</span>${data.msg}</li>`);
     $("#console ul").scrollTop($("#console ul")[0].scrollHeight); // auto scroll to bottom
 }
 

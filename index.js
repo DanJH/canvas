@@ -23,11 +23,13 @@ io.on("connection", function(socket) {
     socket.on("draw", function(data) {
         game.board.push(data);
         io.emit("draw", data);
+        io.emit("indexCount", game.board.length);
     });
 
     socket.on("clearBoard", function(user) {
         game.board = [];
         io.emit("clearBoard", user);
+        io.emit("indexCount", game.board.length);
     });
 
     socket.on("chatMessage", function(data) {
