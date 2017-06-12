@@ -35,7 +35,7 @@ $("canvas").mousedown(function() {
         mouse.down = true;
         newObject();
 });
-$("canvas").mo useup(function() {
+$("canvas").mouseup(function() {
     mouse.down = false;
 });
 
